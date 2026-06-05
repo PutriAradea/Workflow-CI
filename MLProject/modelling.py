@@ -18,7 +18,7 @@ from sklearn.metrics import (
 mlflow.set_tracking_uri("sqlite:///mlflow.db")
 mlflow.set_experiment("Stroke_Prediction")
 
-df = pd.read_csv("stroke_preprocessed.csv")
+df = pd.read_csv("MLProject/stroke_preprocessed.csv")
 
 X = df.drop("stroke", axis=1)
 y = df["stroke"]
