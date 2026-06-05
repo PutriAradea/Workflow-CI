@@ -23,6 +23,6 @@ jobs:
           pip install --upgrade pip
           pip install pandas scikit-learn mlflow matplotlib
 
-      - name: Run Training
+      - name: Run MLflow Project
         run: |
-          python MLProject/modelling.py
+          mlflow run MLProject --env-manager local
