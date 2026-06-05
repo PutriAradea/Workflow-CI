@@ -14,11 +14,10 @@ from sklearn.metrics import (
     f1_score
 )
 
-# Set experiment
-mlflow.set_tracking_uri("file:./mlruns")
+
+mlflow.set_tracking_uri("sqlite:///mlflow.db")
 mlflow.set_experiment("Stroke_Prediction")
 
-# Load dataset
 df = pd.read_csv("stroke_preprocessed.csv")
 
 X = df.drop("stroke", axis=1)
@@ -34,46 +33,41 @@ X_train, X_test, y_train, y_test = train_test_split(
 max_iter = 1000
 class_weight = "balanced"
 
-# 🚀 TIDAK USAH start_run()
-model = LogisticRegression(
-    max_iter=max_iter,
-    class_weight=class_weight
-)
+with mlflow.start_run():
 
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
+    model = LogisticRegression(
+        max_iter=max_iter,
+        class_weight=class_weight
+    )
 
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
 
-# logging langsung (CLI already handle run)
-mlflow.log_param("max_iter", max_iter)
-mlflow.log_param("class_weight", class_weight)
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
 
-mlflow.log_metric("accuracy", accuracy)
-mlflow.log_metric("precision", precision)
-mlflow.log_metric("recall", recall)
-mlflow.log_metric("f1_score", f1)
+    mlflow.log_param("max_iter", max_iter)
+    mlflow.log_param("class_weight", class_weight)
 
-mlflow.sklearn.log_model(model, "model")
+    mlflow.log_metric("accuracy", accuracy)
+    mlflow.log_metric("precision", precision)
+    mlflow.log_metric("recall", recall)
+    mlflow.log_metric("f1_score", f1)
 
-# report
-report = classification_report(y_test, y_pred)
-with open("classification_report.txt", "w") as f:
-    f.write(report)
+    mlflow.sklearn.log_model(model, "model")
 
-mlflow.log_artifact("classification_report.txt")
+    report = classification_report(y_test, y_pred)
+    with open("classification_report.txt", "w") as f:
+        f.write(report)
 
-# confusion matrix
-ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
-plt.savefig("confusion_matrix.png")
-plt.close()
+    mlflow.log_artifact("classification_report.txt")
 
-mlflow.log_artifact("confusion_matrix.png")
+    ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
+    plt.savefig("confusion_matrix.png")
+    plt.close()
 
-print(f"Accuracy : {accuracy:.4f}")
-print(f"Precision: {precision:.4f}")
-print(f"Recall   : {recall:.4f}")
-print(f"F1 Score : {f1:.4f}")
+    mlflow.log_artifact("confusion_matrix.png")
+
+    print("DONE OK")

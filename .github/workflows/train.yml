@@ -23,7 +23,6 @@ jobs:
           pip install --upgrade pip
           pip install pandas scikit-learn mlflow matplotlib
 
-      - name: Run MLflow Project
+      - name: Run Training
         run: |
-          export MLFLOW_TRACKING_URI=file:./mlruns
-          mlflow run MLProject --env-manager local
+          python modelling.py
