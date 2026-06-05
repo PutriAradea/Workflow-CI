@@ -34,57 +34,58 @@ X_train, X_test, y_train, y_test = train_test_split(
 # Nama eksperimen
 mlflow.set_experiment("Stroke_Prediction")
 
-with mlflow.start_run():
+# Nama eksperimen
+mlflow.set_experiment("Stroke_Prediction")
 
-    # Parameter model
-    max_iter = 1000
-    class_weight = "balanced"
+# Parameter model
+max_iter = 1000
+class_weight = "balanced"
 
-    model = LogisticRegression(
-        max_iter=max_iter,
-        class_weight=class_weight
-    )
+model = LogisticRegression(
+    max_iter=max_iter,
+    class_weight=class_weight
+)
 
-    model.fit(X_train, y_train)
+model.fit(X_train, y_train)
 
-    # Prediksi
-    y_pred = model.predict(X_test)
+# Prediksi
+y_pred = model.predict(X_test)
 
-    # Metrics
-    accuracy = accuracy_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred)
+# Metrics
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
 
-    # Manual logging parameter
-    mlflow.log_param("max_iter", max_iter)
-    mlflow.log_param("class_weight", class_weight)
+# Manual logging parameter
+mlflow.log_param("max_iter", max_iter)
+mlflow.log_param("class_weight", class_weight)
 
-    # Manual logging metrics
-    mlflow.log_metric("accuracy", accuracy)
-    mlflow.log_metric("precision", precision)
-    mlflow.log_metric("recall", recall)
-    mlflow.log_metric("f1_score", f1)
+# Manual logging metrics
+mlflow.log_metric("accuracy", accuracy)
+mlflow.log_metric("precision", precision)
+mlflow.log_metric("recall", recall)
+mlflow.log_metric("f1_score", f1)
 
-    # Simpan model
-    mlflow.sklearn.log_model(model, "model")
+# Simpan model
+mlflow.sklearn.log_model(model, "model")
 
-    # Artefak 1: Classification Report
-    report = classification_report(y_test, y_pred)
+# Artefak 1: Classification Report
+report = classification_report(y_test, y_pred)
 
-    with open("classification_report.txt", "w") as f:
-        f.write(report)
+with open("classification_report.txt", "w") as f:
+    f.write(report)
 
-    mlflow.log_artifact("classification_report.txt")
+mlflow.log_artifact("classification_report.txt")
 
-    # Artefak 2: Confusion Matrix
-    ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
-    plt.savefig("confusion_matrix.png")
-    plt.close()
+# Artefak 2: Confusion Matrix
+ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
+plt.savefig("confusion_matrix.png")
+plt.close()
 
-    mlflow.log_artifact("confusion_matrix.png")
+mlflow.log_artifact("confusion_matrix.png")
 
-    print(f"Accuracy : {accuracy:.4f}")
-    print(f"Precision: {precision:.4f}")
-    print(f"Recall   : {recall:.4f}")
-    print(f"F1 Score : {f1:.4f}")
+print(f"Accuracy : {accuracy:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"Recall   : {recall:.4f}")
+print(f"F1 Score : {f1:.4f}")
