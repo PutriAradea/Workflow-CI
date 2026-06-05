@@ -1,4 +1,4 @@
-name: StrokePrediction
+name: Stroke_Prediction
 
 entry_points:
   main:

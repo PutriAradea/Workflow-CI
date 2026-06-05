@@ -14,71 +14,59 @@ from sklearn.metrics import (
     f1_score
 )
 
-# Load dataset
-df = pd.read_csv(
-    "stroke_preprocessed.csv"
-)
+# Set experiment
+mlflow.set_tracking_uri("file:./mlruns")
+mlflow.set_experiment("Stroke_Prediction")
 
-# Split fitur dan target
+# Load dataset
+df = pd.read_csv("stroke_preprocessed.csv")
+
 X = df.drop("stroke", axis=1)
 y = df["stroke"]
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
+    X, y,
     test_size=0.2,
     random_state=42,
     stratify=y
 )
 
-# Nama eksperimen
-mlflow.set_experiment("Stroke_Prediction")
-
-# Nama eksperimen
-mlflow.set_experiment("Stroke_Prediction")
-
-# Parameter model
 max_iter = 1000
 class_weight = "balanced"
 
+# 🚀 TIDAK USAH start_run()
 model = LogisticRegression(
     max_iter=max_iter,
     class_weight=class_weight
 )
 
 model.fit(X_train, y_train)
-
-# Prediksi
 y_pred = model.predict(X_test)
 
-# Metrics
 accuracy = accuracy_score(y_test, y_pred)
 precision = precision_score(y_test, y_pred)
 recall = recall_score(y_test, y_pred)
 f1 = f1_score(y_test, y_pred)
 
-# Manual logging parameter
+# logging langsung (CLI already handle run)
 mlflow.log_param("max_iter", max_iter)
 mlflow.log_param("class_weight", class_weight)
 
-# Manual logging metrics
 mlflow.log_metric("accuracy", accuracy)
 mlflow.log_metric("precision", precision)
 mlflow.log_metric("recall", recall)
 mlflow.log_metric("f1_score", f1)
 
-# Simpan model
 mlflow.sklearn.log_model(model, "model")
 
-# Artefak 1: Classification Report
+# report
 report = classification_report(y_test, y_pred)
-
 with open("classification_report.txt", "w") as f:
     f.write(report)
 
 mlflow.log_artifact("classification_report.txt")
 
-# Artefak 2: Confusion Matrix
+# confusion matrix
 ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
 plt.savefig("confusion_matrix.png")
 plt.close()
